@@ -1,0 +1,24 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+COPY "Biscotine 2.0.sln" .
+COPY src/Biscotine.Api/Biscotine.Api.csproj src/Biscotine.Api/
+COPY src/Biscotine.Application/Biscotine.Application.csproj src/Biscotine.Application/
+COPY src/Biscotine.Domain/Biscotine.Domain.csproj src/Biscotine.Domain/
+COPY src/Biscotine.Infrastructure/Biscotine.Infrastructure.csproj src/Biscotine.Infrastructure/
+
+RUN dotnet restore "Biscotine 2.0.sln"
+
+COPY src/ src/
+
+RUN dotnet publish src/Biscotine.Api/Biscotine.Api.csproj -c Release -o /app/publish --no-restore
+
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
+WORKDIR /app
+
+ENV ASPNETCORE_URLS=http://+:8080
+EXPOSE 8080
+
+COPY --from=build /app/publish ./
+
+ENTRYPOINT ["dotnet", "Biscotine.Api.dll"]

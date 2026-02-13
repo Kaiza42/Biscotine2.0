@@ -1,0 +1,6 @@
+@Biscotine.Api_HostAddress = http://localhost:0
+
+GET {{Biscotine.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
